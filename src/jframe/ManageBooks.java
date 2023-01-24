@@ -7,8 +7,10 @@ package jframe;
 import com.mysql.cj.protocol.Resultset;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
@@ -22,8 +24,8 @@ public class ManageBooks extends javax.swing.JFrame {
      * Creates new form ManageBooks
      */
     
-    String book_name,author;
-    int book_id,quantity;
+    String bookName,author;
+    int bookId,quantity;
     DefaultTableModel model;
     public ManageBooks() {
         initComponents();
@@ -52,6 +54,103 @@ public class ManageBooks extends javax.swing.JFrame {
         }catch(Exception e){
             e.printStackTrace();
         }
+    }
+    
+    //to add book to book_details table
+    public boolean addBook(){
+        boolean isAdded = false;
+        
+        bookId = Integer.parseInt(txt_bookId.getText());
+        bookName = txt_bookName.getText();
+        author = txt_authorName.getText();
+        quantity = Integer.parseInt(txt_quantity.getText());
+        
+        try{
+            Connection con = DBConnection.getConnection();
+            String sql = "insert into book_details values(?,?,?,?)";
+            PreparedStatement pst = con.prepareStatement(sql);
+            pst.setInt(1, bookId);
+            pst.setString(2, bookName);
+            pst.setString(3, author);
+            pst.setInt(4, quantity);
+            
+            int rowCount = pst.executeUpdate();
+            if(rowCount > 0){
+                isAdded = true;
+            }else{
+                isAdded = false;
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return isAdded;
+    }
+    
+    
+    //to update book details
+    
+    public boolean updateBook(){
+        boolean isUpdated = false;
+        
+        bookId = Integer.parseInt(txt_bookId.getText());
+        bookName = txt_bookName.getText();
+        author = txt_authorName.getText();
+        quantity = Integer.parseInt(txt_quantity.getText());
+        
+        try{
+            Connection con = DBConnection.getConnection();
+            String sql = "update book_details set book_name = ?, author = ?, quantity = ? where book_id = ?";
+            PreparedStatement pst = con.prepareStatement(sql);
+            pst.setString(1, bookName);
+            pst.setString(2, author);
+            pst.setInt(3, quantity);
+            pst.setInt(4, bookId);
+            
+            int rowCount = pst.executeUpdate();
+            if(rowCount > 0){
+                isUpdated = true;
+            }else{
+                isUpdated = false;
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return isUpdated;
+    }
+    
+    
+    //method to delete book details
+    
+    public boolean deleteBook(){
+        boolean isDeleted = false;
+        
+        bookId = Integer.parseInt(txt_bookId.getText());
+        
+        try{
+            Connection con = DBConnection.getConnection();
+            String sql = "delete from book_details where book_id = ?";
+            PreparedStatement pst = con.prepareStatement(sql);
+            pst.setInt(1, bookId);
+            
+            
+            int rowCount = pst.executeUpdate();
+            if(rowCount > 0){
+                isDeleted = true;
+            }else{
+                isDeleted = false;
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return isDeleted;
+    }
+    
+    
+    //clear table
+    
+    public void clearTable(){
+        DefaultTableModel model = (DefaultTableModel) tbl_bookDetails.getModel();
+        model.setRowCount(0);
     }
 
     /**
@@ -384,15 +483,33 @@ public class ManageBooks extends javax.swing.JFrame {
     }//GEN-LAST:event_txt_quantityActionPerformed
 
     private void rSMaterialButtonCircle1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSMaterialButtonCircle1ActionPerformed
-        // TODO add your handling code here:
+        if(updateBook()== true){
+            JOptionPane.showMessageDialog(this, "Book updated");
+            clearTable();
+            setBookDetailsToTable();
+        }else{
+            JOptionPane.showMessageDialog(this, "Book updation Failed");
+        }
     }//GEN-LAST:event_rSMaterialButtonCircle1ActionPerformed
 
     private void rSMaterialButtonCircle2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSMaterialButtonCircle2ActionPerformed
-        // TODO add your handling code here:
+        if(addBook()== true){
+            JOptionPane.showMessageDialog(this, "Book Added");
+            clearTable();
+            setBookDetailsToTable();
+        }else{
+            JOptionPane.showMessageDialog(this, "Book Addition Failed");
+        }
     }//GEN-LAST:event_rSMaterialButtonCircle2ActionPerformed
 
     private void rSMaterialButtonCircle3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSMaterialButtonCircle3ActionPerformed
-        // TODO add your handling code here:
+        if(deleteBook()== true){
+            JOptionPane.showMessageDialog(this, "Book Deletd");
+            clearTable();
+            setBookDetailsToTable();
+        }else{
+            JOptionPane.showMessageDialog(this, "Book Deletion Failed");
+        }
     }//GEN-LAST:event_rSMaterialButtonCircle3ActionPerformed
 
     private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
