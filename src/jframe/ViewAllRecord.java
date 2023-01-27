@@ -129,6 +129,7 @@ public class ViewAllRecord extends javax.swing.JFrame {
         jLabel11 = new javax.swing.JLabel();
         jPanel7 = new javax.swing.JPanel();
         jLabel14 = new javax.swing.JLabel();
+        rSMaterialButtonCircle2 = new rojerusan.RSMaterialButtonCircle();
         panel_table = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tbl_issuebookDetails = new rojerusan.RSTableMetro();
@@ -165,23 +166,23 @@ public class ViewAllRecord extends javax.swing.JFrame {
         date_fromDate.setColorForeground(new java.awt.Color(255, 51, 51));
         date_fromDate.setFont(new java.awt.Font("Tahoma", 0, 17)); // NOI18N
         date_fromDate.setPlaceholder("Select Issue Date");
-        jPanel1.add(date_fromDate, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 210, 350, -1));
+        jPanel1.add(date_fromDate, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 210, 350, -1));
 
         jLabel22.setFont(new java.awt.Font("Verdana", 0, 17)); // NOI18N
         jLabel22.setForeground(new java.awt.Color(255, 255, 255));
         jLabel22.setText("Issue Date :");
-        jPanel1.add(jLabel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 220, 140, -1));
+        jPanel1.add(jLabel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 220, 140, -1));
 
         date_toDate.setColorBackground(new java.awt.Color(255, 51, 51));
         date_toDate.setColorForeground(new java.awt.Color(255, 51, 51));
         date_toDate.setFont(new java.awt.Font("Tahoma", 0, 17)); // NOI18N
         date_toDate.setPlaceholder("Select Issue Date");
-        jPanel1.add(date_toDate, new org.netbeans.lib.awtextra.AbsoluteConstraints(810, 210, 350, -1));
+        jPanel1.add(date_toDate, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 210, 350, -1));
 
         jLabel23.setFont(new java.awt.Font("Verdana", 0, 17)); // NOI18N
         jLabel23.setForeground(new java.awt.Color(255, 255, 255));
         jLabel23.setText("Issue Date :");
-        jPanel1.add(jLabel23, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 220, 140, -1));
+        jPanel1.add(jLabel23, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 220, 140, -1));
 
         rSMaterialButtonCircle1.setBackground(new java.awt.Color(255, 51, 51));
         rSMaterialButtonCircle1.setText("SEARCH");
@@ -190,7 +191,7 @@ public class ViewAllRecord extends javax.swing.JFrame {
                 rSMaterialButtonCircle1ActionPerformed(evt);
             }
         });
-        jPanel1.add(rSMaterialButtonCircle1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1220, 190, 220, 70));
+        jPanel1.add(rSMaterialButtonCircle1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1100, 190, 190, 70));
 
         jPanel5.setBackground(new java.awt.Color(255, 51, 51));
 
@@ -251,6 +252,15 @@ public class ViewAllRecord extends javax.swing.JFrame {
 
         jPanel1.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, 40));
 
+        rSMaterialButtonCircle2.setBackground(new java.awt.Color(255, 51, 51));
+        rSMaterialButtonCircle2.setText("ALL");
+        rSMaterialButtonCircle2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                rSMaterialButtonCircle2MouseClicked(evt);
+            }
+        });
+        jPanel1.add(rSMaterialButtonCircle2, new org.netbeans.lib.awtextra.AbsoluteConstraints(1310, 190, 160, 70));
+
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1480, 280));
 
         panel_table.setBackground(new java.awt.Color(255, 255, 255));
@@ -303,10 +313,19 @@ public class ViewAllRecord extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel14MouseClicked
 
     private void rSMaterialButtonCircle1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rSMaterialButtonCircle1ActionPerformed
-       clearTable();
-       search();
+       if(date_fromDate.getDatoFecha() != null && date_toDate.getDatoFecha() != null){
+           clearTable();
+           search();
+       }else{
+           JOptionPane.showMessageDialog(this, "Please select a date");
+       } 
         
     }//GEN-LAST:event_rSMaterialButtonCircle1ActionPerformed
+
+    private void rSMaterialButtonCircle2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_rSMaterialButtonCircle2MouseClicked
+        clearTable();
+        setIssueBooktDetailsToTable();
+    }//GEN-LAST:event_rSMaterialButtonCircle2MouseClicked
 
     /**
      * @param args the command line arguments
@@ -358,6 +377,7 @@ public class ViewAllRecord extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JPanel panel_table;
     private rojerusan.RSMaterialButtonCircle rSMaterialButtonCircle1;
+    private rojerusan.RSMaterialButtonCircle rSMaterialButtonCircle2;
     private rojerusan.RSTableMetro tbl_issuebookDetails;
     // End of variables declaration//GEN-END:variables
 }

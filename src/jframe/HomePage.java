@@ -330,6 +330,17 @@ public class HomePage extends javax.swing.JFrame {
         jLabel15.setForeground(new java.awt.Color(153, 153, 153));
         jLabel15.setIcon(new javax.swing.ImageIcon(getClass().getResource("/adminIcons/icons8_Books_26px.png"))); // NOI18N
         jLabel15.setText("  View Issued Books");
+        jLabel15.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel15MouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jLabel15MouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabel15MouseExited(evt);
+            }
+        });
         jPanel12.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 20, 200, -1));
 
         jPanel3.add(jPanel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 460, 340, 60));
@@ -341,6 +352,17 @@ public class HomePage extends javax.swing.JFrame {
         jLabel16.setForeground(new java.awt.Color(153, 153, 153));
         jLabel16.setIcon(new javax.swing.ImageIcon(getClass().getResource("/adminIcons/icons8_Conference_26px.png"))); // NOI18N
         jLabel16.setText("  Defaulter list");
+        jLabel16.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel16MouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jLabel16MouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabel16MouseExited(evt);
+            }
+        });
         jPanel13.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 20, 200, -1));
 
         jPanel3.add(jPanel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 510, 340, 60));
@@ -548,6 +570,34 @@ public class HomePage extends javax.swing.JFrame {
     private void jLabel14MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel14MouseExited
         jPanel11.setBackground(mouseExitColor);
     }//GEN-LAST:event_jLabel14MouseExited
+
+    private void jLabel15MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel15MouseEntered
+        jPanel12.setBackground(mouseEnterColor);
+    }//GEN-LAST:event_jLabel15MouseEntered
+
+    private void jLabel15MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel15MouseExited
+        jPanel12.setBackground(mouseExitColor);
+    }//GEN-LAST:event_jLabel15MouseExited
+
+    private void jLabel15MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel15MouseClicked
+        IssueBookDetails issuebookDetails = new IssueBookDetails();
+        issuebookDetails.setVisible(true);
+        dispose();
+    }//GEN-LAST:event_jLabel15MouseClicked
+
+    private void jLabel16MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel16MouseEntered
+        jPanel13.setBackground(mouseEnterColor);
+    }//GEN-LAST:event_jLabel16MouseEntered
+
+    private void jLabel16MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel16MouseExited
+        jPanel13.setBackground(mouseExitColor);
+    }//GEN-LAST:event_jLabel16MouseExited
+
+    private void jLabel16MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel16MouseClicked
+        DefaulterList defaulterList = new DefaulterList();
+        defaulterList.setVisible(true);
+        dispose();
+    }//GEN-LAST:event_jLabel16MouseClicked
 
     /**
      * @param args the command line arguments
