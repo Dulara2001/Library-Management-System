@@ -6,6 +6,12 @@ package jframe;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import javax.swing.table.DefaultTableModel;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -23,22 +29,120 @@ public class HomePage extends javax.swing.JFrame {
      */
     Color mouseEnterColor = new Color(0,0,0);
     Color mouseExitColor = new Color(51,51,51);
+    DefaultTableModel model;
     public HomePage() {
         initComponents();
         showPieChart();
+        setStudentDetailsToTable();
+        setBookDetailsToTable();
+        setDataToCards();
     }
     
+    
+    public void setStudentDetailsToTable(){
+        try{
+             Class.forName("com.mysql.jdbc.Driver");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/library_ms", "root", "Dulara2001#");
+            Statement st = con.createStatement();
+            ResultSet rs = st.executeQuery("select * from student_details");
+            
+            while(rs.next()){
+                String studentId = rs.getString("student_id");
+                String studentName = rs.getString("name");
+                String course = rs.getString("course");
+                String branch = rs.getString("branch");
+                
+                Object[] obj = {studentId,studentName,course,branch};
+                model = (DefaultTableModel) tbl_studentDetails.getModel();
+                model.addRow(obj);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+    
+    
+     public void setBookDetailsToTable(){
+        try{
+             Class.forName("com.mysql.jdbc.Driver");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/library_ms", "root", "Dulara2001#");
+            Statement st = con.createStatement();
+            ResultSet rs = st.executeQuery("select * from book_details");
+            
+            while(rs.next()){
+                String bookId = rs.getString("book_id");
+                String bookName = rs.getString("book_name");
+                String author = rs.getString("author");
+                int quantity = rs.getInt("quantity");
+                
+                Object[] obj = {bookId,bookName,author,quantity};
+                model = (DefaultTableModel) tbl_bookDetails.getModel();
+                model.addRow(obj);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+    
+     
+     public void setDataToCards(){
+         Statement st = null;
+         ResultSet rs = null;
+         
+         long l = System.currentTimeMillis();
+         Date todaysDate = new Date(l);
+         
+         try{
+             Connection con = DBConnection.getConnection();
+             st = con.createStatement();
+             rs = st.executeQuery("select * from book_details");
+             rs.last();
+             rs.getRow();
+             lbl_noOfBooks.setText(Integer.toString(rs.getRow()));
+             
+             rs = st.executeQuery("select * from student_details");
+             rs.last();
+             rs.getRow();
+             lbl_noOfStudent.setText(Integer.toString(rs.getRow()));
+             
+             rs = st.executeQuery("select * from issue_book_details");
+             rs.last();
+             lbl_issueBooks.setText(Integer.toString(rs.getRow()));
+             
+             rs = st.executeQuery("select * from issue_book_details where due_date < '"+todaysDate+"' and status = '"+"pending"+"'");
+             rs.last();
+             lbl_defaulterList.setText(Integer.toString(rs.getRow()));
+             
+             
+         }catch(Exception e){
+             e.printStackTrace();
+         }
+     }
+     
+     
     public void showPieChart(){
         
         //create dataset
       DefaultPieDataset barDataset = new DefaultPieDataset( );
-      barDataset.setValue( "IPhone 5s" , new Double( 20 ) );  
-      barDataset.setValue( "SamSung Grand" , new Double( 20 ) );   
-      barDataset.setValue( "MotoG" , new Double( 40 ) );    
-      barDataset.setValue( "Nokia Lumia" , new Double( 10 ) );  
+      
+      try{
+          Connection con = DBConnection.getConnection();
+          String sql = "select book_name , count(*) as issue_count from issue_book_details group by book_id";
+          Statement st = con.createStatement();
+          ResultSet rs = st.executeQuery(sql);
+          
+          while(rs.next()){
+              barDataset.setValue(rs.getString("book_name") , new Double(rs.getDouble("issue_count")) );  
+          }
+      }catch(Exception e){
+          e.printStackTrace();
+      }
+      
+     
+      
       
       //create chart
-       JFreeChart piechart = ChartFactory.createPieChart("mobile sales",barDataset, false,true,false);//explain
+       JFreeChart piechart = ChartFactory.createPieChart("Issue Book Details",barDataset, true,true,false);//explain
       
         PiePlot piePlot =(PiePlot) piechart.getPlot();
       
@@ -98,23 +202,23 @@ public class HomePage extends javax.swing.JFrame {
         jLabel16 = new javax.swing.JLabel();
         jPanel14 = new javax.swing.JPanel();
         jPanel15 = new javax.swing.JPanel();
-        jLabel18 = new javax.swing.JLabel();
+        lbl_noOfBooks = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
         jLabel19 = new javax.swing.JLabel();
         jPanel16 = new javax.swing.JPanel();
-        jLabel20 = new javax.swing.JLabel();
+        lbl_noOfStudent = new javax.swing.JLabel();
         jLabel21 = new javax.swing.JLabel();
         jPanel17 = new javax.swing.JPanel();
-        jLabel22 = new javax.swing.JLabel();
+        lbl_issueBooks = new javax.swing.JLabel();
         jPanel18 = new javax.swing.JPanel();
-        jLabel23 = new javax.swing.JLabel();
+        lbl_defaulterList = new javax.swing.JLabel();
         jLabel24 = new javax.swing.JLabel();
         jLabel25 = new javax.swing.JLabel();
         jLabel26 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        rSTableMetro2 = new rojerusan.RSTableMetro();
+        tbl_bookDetails = new rojerusan.RSTableMetro();
         jScrollPane3 = new javax.swing.JScrollPane();
-        rSTableMetro3 = new rojerusan.RSTableMetro();
+        tbl_studentDetails = new rojerusan.RSTableMetro();
         panelPieChart = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -246,6 +350,9 @@ public class HomePage extends javax.swing.JFrame {
         jLabel11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/adminIcons/icons8_Read_Online_26px.png"))); // NOI18N
         jLabel11.setText("  Manage Students");
         jLabel11.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel11MouseClicked(evt);
+            }
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jLabel11MouseEntered(evt);
             }
@@ -373,13 +480,28 @@ public class HomePage extends javax.swing.JFrame {
         jPanel14.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel15.setBorder(javax.swing.BorderFactory.createMatteBorder(15, 0, 0, 0, new java.awt.Color(255, 51, 51)));
-        jPanel15.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel18.setFont(new java.awt.Font("Tw Cen MT Condensed Extra Bold", 0, 50)); // NOI18N
-        jLabel18.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel18.setIcon(new javax.swing.ImageIcon(getClass().getResource("/adminIcons/icons8_Book_Shelf_50px.png"))); // NOI18N
-        jLabel18.setText("10");
-        jPanel15.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 40, -1, -1));
+        lbl_noOfBooks.setFont(new java.awt.Font("Tw Cen MT Condensed Extra Bold", 0, 50)); // NOI18N
+        lbl_noOfBooks.setForeground(new java.awt.Color(102, 102, 102));
+        lbl_noOfBooks.setIcon(new javax.swing.ImageIcon(getClass().getResource("/adminIcons/icons8_Book_Shelf_50px.png"))); // NOI18N
+        lbl_noOfBooks.setText("10");
+
+        javax.swing.GroupLayout jPanel15Layout = new javax.swing.GroupLayout(jPanel15);
+        jPanel15.setLayout(jPanel15Layout);
+        jPanel15Layout.setHorizontalGroup(
+            jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel15Layout.createSequentialGroup()
+                .addGap(74, 74, 74)
+                .addComponent(lbl_noOfBooks)
+                .addContainerGap(81, Short.MAX_VALUE))
+        );
+        jPanel15Layout.setVerticalGroup(
+            jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel15Layout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addComponent(lbl_noOfBooks)
+                .addContainerGap(51, Short.MAX_VALUE))
+        );
 
         jPanel14.add(jPanel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(149, 84, 260, 140));
 
@@ -396,11 +518,11 @@ public class HomePage extends javax.swing.JFrame {
         jPanel16.setBorder(javax.swing.BorderFactory.createMatteBorder(15, 0, 0, 0, new java.awt.Color(102, 102, 255)));
         jPanel16.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel20.setFont(new java.awt.Font("Tw Cen MT Condensed Extra Bold", 0, 50)); // NOI18N
-        jLabel20.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel20.setIcon(new javax.swing.ImageIcon(getClass().getResource("/adminIcons/icons8_People_50px.png"))); // NOI18N
-        jLabel20.setText("10");
-        jPanel16.add(jLabel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 40, -1, -1));
+        lbl_noOfStudent.setFont(new java.awt.Font("Tw Cen MT Condensed Extra Bold", 0, 50)); // NOI18N
+        lbl_noOfStudent.setForeground(new java.awt.Color(102, 102, 102));
+        lbl_noOfStudent.setIcon(new javax.swing.ImageIcon(getClass().getResource("/adminIcons/icons8_People_50px.png"))); // NOI18N
+        lbl_noOfStudent.setText("10");
+        jPanel16.add(lbl_noOfStudent, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 40, -1, -1));
 
         jPanel14.add(jPanel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 80, 260, 140));
 
@@ -412,22 +534,22 @@ public class HomePage extends javax.swing.JFrame {
         jPanel17.setBorder(javax.swing.BorderFactory.createMatteBorder(15, 0, 0, 0, new java.awt.Color(255, 51, 51)));
         jPanel17.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel22.setFont(new java.awt.Font("Tw Cen MT Condensed Extra Bold", 0, 50)); // NOI18N
-        jLabel22.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel22.setIcon(new javax.swing.ImageIcon(getClass().getResource("/adminIcons/icons8_Sell_50px.png"))); // NOI18N
-        jLabel22.setText("10");
-        jPanel17.add(jLabel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 40, -1, -1));
+        lbl_issueBooks.setFont(new java.awt.Font("Tw Cen MT Condensed Extra Bold", 0, 50)); // NOI18N
+        lbl_issueBooks.setForeground(new java.awt.Color(102, 102, 102));
+        lbl_issueBooks.setIcon(new javax.swing.ImageIcon(getClass().getResource("/adminIcons/icons8_Sell_50px.png"))); // NOI18N
+        lbl_issueBooks.setText("10");
+        jPanel17.add(lbl_issueBooks, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 40, -1, -1));
 
         jPanel14.add(jPanel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(870, 80, 260, 140));
 
         jPanel18.setBorder(javax.swing.BorderFactory.createMatteBorder(15, 0, 0, 0, new java.awt.Color(102, 102, 255)));
         jPanel18.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel23.setFont(new java.awt.Font("Tw Cen MT Condensed Extra Bold", 0, 50)); // NOI18N
-        jLabel23.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel23.setIcon(new javax.swing.ImageIcon(getClass().getResource("/adminIcons/icons8_List_of_Thumbnails_50px.png"))); // NOI18N
-        jLabel23.setText("10");
-        jPanel18.add(jLabel23, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 40, -1, -1));
+        lbl_defaulterList.setFont(new java.awt.Font("Tw Cen MT Condensed Extra Bold", 0, 50)); // NOI18N
+        lbl_defaulterList.setForeground(new java.awt.Color(102, 102, 102));
+        lbl_defaulterList.setIcon(new javax.swing.ImageIcon(getClass().getResource("/adminIcons/icons8_List_of_Thumbnails_50px.png"))); // NOI18N
+        lbl_defaulterList.setText("10");
+        jPanel18.add(lbl_defaulterList, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 40, -1, -1));
 
         jPanel14.add(jPanel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(1240, 80, 260, 140));
 
@@ -446,56 +568,50 @@ public class HomePage extends javax.swing.JFrame {
         jLabel26.setText("Student Details");
         jPanel14.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 280, -1, -1));
 
-        rSTableMetro2.setModel(new javax.swing.table.DefaultTableModel(
+        tbl_bookDetails.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {"1", "ABC", "BBF", "456"},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
                 "Book Id", "Name", "Author", "Quantity"
             }
         ));
-        rSTableMetro2.setColorBackgoundHead(new java.awt.Color(102, 102, 255));
-        rSTableMetro2.setColorBordeFilas(new java.awt.Color(102, 102, 255));
-        rSTableMetro2.setColorFilasBackgound2(new java.awt.Color(255, 255, 255));
-        rSTableMetro2.setColorSelBackgound(new java.awt.Color(255, 51, 51));
-        rSTableMetro2.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 25)); // NOI18N
-        rSTableMetro2.setFuenteFilas(new java.awt.Font("Segoe UI Semibold", 0, 18)); // NOI18N
-        rSTableMetro2.setFuenteFilasSelect(new java.awt.Font("Yu Gothic UI Light", 1, 20)); // NOI18N
-        rSTableMetro2.setFuenteHead(new java.awt.Font("Segoe UI Semibold", 1, 20)); // NOI18N
-        rSTableMetro2.setRowHeight(40);
-        jScrollPane2.setViewportView(rSTableMetro2);
+        tbl_bookDetails.setColorBackgoundHead(new java.awt.Color(102, 102, 255));
+        tbl_bookDetails.setColorBordeFilas(new java.awt.Color(102, 102, 255));
+        tbl_bookDetails.setColorFilasBackgound2(new java.awt.Color(255, 255, 255));
+        tbl_bookDetails.setColorSelBackgound(new java.awt.Color(255, 51, 51));
+        tbl_bookDetails.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 25)); // NOI18N
+        tbl_bookDetails.setFuenteFilas(new java.awt.Font("Segoe UI Semibold", 0, 18)); // NOI18N
+        tbl_bookDetails.setFuenteFilasSelect(new java.awt.Font("Yu Gothic UI Light", 1, 20)); // NOI18N
+        tbl_bookDetails.setFuenteHead(new java.awt.Font("Segoe UI Semibold", 1, 20)); // NOI18N
+        tbl_bookDetails.setRowHeight(40);
+        jScrollPane2.setViewportView(tbl_bookDetails);
 
         jPanel14.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 670, 770, 240));
 
-        rSTableMetro3.setModel(new javax.swing.table.DefaultTableModel(
+        tbl_studentDetails.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {"1", "ABC", "BBF", "456"},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
                 "Student Id", "Name", "course", "Branch"
             }
         ));
-        rSTableMetro3.setColorBackgoundHead(new java.awt.Color(102, 102, 255));
-        rSTableMetro3.setColorBordeFilas(new java.awt.Color(102, 102, 255));
-        rSTableMetro3.setColorFilasBackgound2(new java.awt.Color(255, 255, 255));
-        rSTableMetro3.setColorSelBackgound(new java.awt.Color(255, 51, 51));
-        rSTableMetro3.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 25)); // NOI18N
-        rSTableMetro3.setFuenteFilas(new java.awt.Font("Segoe UI Semibold", 0, 18)); // NOI18N
-        rSTableMetro3.setFuenteFilasSelect(new java.awt.Font("Yu Gothic UI Light", 1, 20)); // NOI18N
-        rSTableMetro3.setFuenteHead(new java.awt.Font("Segoe UI Semibold", 1, 20)); // NOI18N
-        rSTableMetro3.setRowHeight(40);
-        jScrollPane3.setViewportView(rSTableMetro3);
+        tbl_studentDetails.setColorBackgoundHead(new java.awt.Color(102, 102, 255));
+        tbl_studentDetails.setColorBordeFilas(new java.awt.Color(102, 102, 255));
+        tbl_studentDetails.setColorFilasBackgound2(new java.awt.Color(255, 255, 255));
+        tbl_studentDetails.setColorSelBackgound(new java.awt.Color(255, 51, 51));
+        tbl_studentDetails.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 25)); // NOI18N
+        tbl_studentDetails.setFuenteFilas(new java.awt.Font("Segoe UI Semibold", 0, 18)); // NOI18N
+        tbl_studentDetails.setFuenteFilasSelect(new java.awt.Font("Yu Gothic UI Light", 1, 20)); // NOI18N
+        tbl_studentDetails.setFuenteHead(new java.awt.Font("Segoe UI Semibold", 1, 20)); // NOI18N
+        tbl_studentDetails.setRowHeight(40);
+        jScrollPane3.setViewportView(tbl_studentDetails);
 
         jPanel14.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 330, 770, 240));
 
         panelPieChart.setLayout(new java.awt.BorderLayout());
-        jPanel14.add(panelPieChart, new org.netbeans.lib.awtextra.AbsoluteConstraints(980, 340, 540, 450));
+        jPanel14.add(panelPieChart, new org.netbeans.lib.awtextra.AbsoluteConstraints(970, 350, 540, 450));
 
         getContentPane().add(jPanel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 70, 1570, 950));
 
@@ -599,6 +715,12 @@ public class HomePage extends javax.swing.JFrame {
         dispose();
     }//GEN-LAST:event_jLabel16MouseClicked
 
+    private void jLabel11MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel11MouseClicked
+        ManageStudents manageStudents = new ManageStudents();
+        manageStudents.setVisible(true);
+        dispose();
+    }//GEN-LAST:event_jLabel11MouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -644,13 +766,9 @@ public class HomePage extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
-    private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
-    private javax.swing.JLabel jLabel22;
-    private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel25;
     private javax.swing.JLabel jLabel26;
@@ -681,8 +799,12 @@ public class HomePage extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JLabel lbl_defaulterList;
+    private javax.swing.JLabel lbl_issueBooks;
+    private javax.swing.JLabel lbl_noOfBooks;
+    private javax.swing.JLabel lbl_noOfStudent;
     private javax.swing.JPanel panelPieChart;
-    private rojerusan.RSTableMetro rSTableMetro2;
-    private rojerusan.RSTableMetro rSTableMetro3;
+    private rojerusan.RSTableMetro tbl_bookDetails;
+    private rojerusan.RSTableMetro tbl_studentDetails;
     // End of variables declaration//GEN-END:variables
 }
